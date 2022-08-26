@@ -10,6 +10,7 @@ export default function Form() {
     const list = useSelector(state => state.list)
     const [isError50,setIsError] = useState(false)
     const [isErrorEmpty,setIsErrorEmpty] = useState(false)
+    const [isErrorDate,setIsErrorDate] = useState(false)
   
 
     const dispatch = useDispatch()
@@ -21,19 +22,28 @@ export default function Form() {
     },[localStorage.getItem('job')])
     const handleSubmit =(e)=>{
         e.preventDefault();
+      const today = new Date()
+      var date1 = new Date(creator.date);
+      const dateCal = date1 - today;
         if(creator.content.length === 0 || creator.date.length ===0){
           setIsErrorEmpty(true)
+          setIsErrorDate(false)
+        }
+        else if(dateCal < 0){
+          setIsErrorDate(true)
         }
 
-        if(creator.content.length > 50){
+       else if(creator.content.length > 50){
           setIsError(true)
           setIsErrorEmpty(false)
+          setIsErrorDate(false)
         }
         else {
           
           dispatch(addJobRequest([...list,{content :creator.content , date : creator.date,id:list.length}]))
           setIsError(false)
           setIsErrorEmpty(false)
+          setIsErrorDate(false)
         }
     }
   return (
@@ -53,6 +63,7 @@ export default function Form() {
        </Stack>
   {isError50 && <Alert severity="error">Không được lớn hơn 50 kí tự</Alert>}
   {isErrorEmpty && <Alert severity="error">Không được Bỏ trống</Alert>}
+  {isErrorDate && <Alert severity="error">Không được chọn ngày quá khứ</Alert>}
 </Stack>
     </form>
        
